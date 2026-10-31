@@ -1,5 +1,5 @@
 const app = require('../server.js');
 
-module.exports = async (req, res) => {
+module.exports = (req, res) => {
   app(req, res);
 };
