@@ -16,12 +16,14 @@ const MIME_TYPES = {
 };
 
 module.exports = async (req, res) => {
-  const url = req.url || '/';
-  const ext = path.extname(url).toLowerCase();
+  const rawUrl = req.url || '/';
+  // Remove query string para pegar o caminho real do arquivo
+  const urlPath = rawUrl.split('?')[0].split('#')[0];
+  const ext = path.extname(urlPath).toLowerCase();
 
-  // 1. Arquivos estáticos — serve direto (CSS, JS, imagens, etc.)
+  // 1. Arquivos estáticos — serve direto com content-type correto
   if (ext && MIME_TYPES[ext]) {
-    const filePath = path.join(__dirname, '..', url);
+    const filePath = path.join(__dirname, '..', urlPath);
     try {
       if (!fs.existsSync(filePath)) {
         res.statusCode = 404;
@@ -30,6 +32,7 @@ module.exports = async (req, res) => {
       }
       const content = fs.readFileSync(filePath);
       res.setHeader('Content-Type', MIME_TYPES[ext]);
+      res.setHeader('Cache-Control', 'public, max-age=3600');
       return res.end(content);
     } catch (err) {
       res.statusCode = 500;
@@ -39,7 +42,7 @@ module.exports = async (req, res) => {
   }
 
   // 2. Rotas da API
-  if (url.startsWith('/api/')) {
+  if (urlPath.startsWith('/api/')) {
     try {
       const app = require('../server.js');
       return app(req, res);
