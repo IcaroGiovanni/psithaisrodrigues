@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#FBF8F4">
+  <title>Pagamento da triagem online — Thais Rodrigues</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="modern.css">
+</head>
+<body>
+  <main class="triagem-checkout">
+    <div class="triagem-checkout-container">
+      <a href="index.html" class="triagem-checkout-brand" aria-label="Thais Rodrigues — página inicial">
+        <img src="logoatt.png" alt="">
+        <span>Thais Rodrigues · Psicologia</span>
+      </a>
+
+      <section class="triagem-checkout-card" aria-labelledby="checkoutTitle">
+        <span class="section-label" style="text-align:center;">Triagem online</span>
+        <h1 class="section-title" id="checkoutTitle">Pagamento via Pix</h1>
+        <p class="triagem-checkout-intro">Faça o Pix e envie o comprovante pelo WhatsApp. Após a confirmação manual do pagamento, o acesso à triagem será enviado por esse canal.</p>
+
+        <p id="invalidTriagem" class="triagem-checkout-disclaimer" role="alert" hidden>Não foi possível identificar a triagem escolhida. Volte à página e selecione uma opção.</p>
+
+        <div id="paymentContent">
+          <div class="triagem-payment-amount">
+            <span id="triagemName">Triagem escolhida</span>
+            <span>R$ 29,90</span>
+          </div>
+
+          <div class="triagem-countdown">
+            <span class="triagem-countdown-label">Tempo sugerido para concluir o pagamento</span>
+            <span id="countdown" role="timer" aria-live="off">15:00</span>
+            <p id="countdownMessage" class="triagem-countdown-message">O cronômetro é apenas uma referência; a chave Pix não expira automaticamente.</p>
+          </div>
+
+          <label class="triagem-pix-key-label" for="pixKey">Chave Pix (e-mail)</label>
+          <div class="triagem-pix-key-row">
+            <input id="pixKey" type="email" value="psi.thaisrodriguesf@gmail.com" readonly>
+            <button id="copyPixButton" class="btn btn-secondary" type="button">Copiar chave Pix</button>
+          </div>
+          <p id="copyStatus" class="triagem-copy-status" role="status" aria-live="polite"></p>
+          <p class="triagem-pix-note">No aplicativo do seu banco, escolha Pix por e-mail, informe a chave acima e confira o valor de <strong>R$ 29,90</strong> antes de confirmar.</p>
+
+          <a id="proofButton" class="btn btn-primary triagem-proof-button" href="#" target="_blank" rel="noopener">Já paguei — enviar comprovante</a>
+          <p class="triagem-pix-note">O botão abre uma conversa no WhatsApp. Anexe o comprovante à mensagem antes de enviar.</p>
+
+          <p class="triagem-checkout-disclaimer"><strong>Importante:</strong> a triagem é orientativa e não é diagnóstico. O acesso é liberado após a conferência do comprovante; não há confirmação automática do pagamento.</p>
+        </div>
+
+        <a class="triagem-checkout-back" href="index.html#triagens">Voltar às opções de triagem</a>
+      </section>
+    </div>
+  </main>
+  <script src="triagem-pix.js"></script>
+</body>
+</html>
