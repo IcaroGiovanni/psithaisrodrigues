@@ -147,6 +147,7 @@ document.head.appendChild(style);
 
 // ===== SCROLL PROGRESS BAR =====
 const progressBar = document.createElement('div');
+progressBar.className = 'scroll-progress';
 progressBar.style.cssText = `
   position: fixed;
   top: 0;
@@ -358,3 +359,42 @@ document.querySelectorAll('.mae-feature, .mae-quote-modern').forEach(el => {
 
 window.addEventListener('scroll', maeScrollReveal);
 maeScrollReveal();
+
+// ===== ACTIVE NAV LINK =====
+const sectionLinks = Array.from(document.querySelectorAll('.nav-link[href^="#"]'));
+
+if (sectionLinks.length) {
+  const linkSections = sectionLinks
+    .map((link) => {
+      const section = document.querySelector(link.getAttribute('href'));
+      return section ? { link, section } : null;
+    })
+    .filter(Boolean);
+
+  const setActiveLink = () => {
+    const marker = window.scrollY + window.innerHeight * 0.32;
+    let current = null;
+
+    linkSections.forEach(({ link, section }) => {
+      if (section.offsetTop <= marker) {
+        current = link;
+      }
+    });
+
+    sectionLinks.forEach((link) => {
+      link.classList.toggle('is-active', link === current);
+    });
+  };
+
+  let navTick = false;
+  window.addEventListener('scroll', () => {
+    if (navTick) return;
+    navTick = true;
+    requestAnimationFrame(() => {
+      setActiveLink();
+      navTick = false;
+    });
+  }, { passive: true });
+
+  setActiveLink();
+}
