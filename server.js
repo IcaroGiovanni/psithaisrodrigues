@@ -555,6 +555,15 @@ function removeUpload(imagePath) {
 }
 
 /* ==========================================================================
+ * Fallback SPA — serve index.html para rotas não encontradas
+ * ========================================================================== */
+
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) return res.status(404).json({ success: false, message: 'Endpoint não encontrado.' });
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+/* ==========================================================================
  * Início
  * ========================================================================== */
 
