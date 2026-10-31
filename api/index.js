@@ -1,10 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 
-const STATIC_EXTENSIONS = ['.html', '.css', '.js', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.ico', '.svg', '.json', '.woff', '.woff2', '.ttf', '.eot'];
-
-const TEXT_TYPES = ['.html', '.css', '.js', '.json', '.svg', '.txt'];
-
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -15,38 +11,34 @@ const MIME_TYPES = {
   '.gif': 'image/gif',
   '.webp': 'image/webp',
   '.ico': 'image/x-icon',
-  '.svg': 'image/svg+xml; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.woff': 'font/woff',
-  '.woff2': 'font/woff2',
-  '.ttf': 'font/ttf',
-  '.eot': 'application/vnd.ms-fontobject',
+  '.svg': 'image/svg+xml',
+  '.json': 'application/json',
 };
 
 module.exports = async (req, res) => {
   const url = req.url || '/';
-
-  // Arquivos estáticos — serve direto do disco como buffer binário
   const ext = path.extname(url).toLowerCase();
-  if (STATIC_EXTENSIONS.includes(ext)) {
+
+  // 1. Arquivos estáticos — serve direto (CSS, JS, imagens, etc.)
+  if (ext && MIME_TYPES[ext]) {
     const filePath = path.join(__dirname, '..', url);
     try {
       if (!fs.existsSync(filePath)) {
         res.statusCode = 404;
-        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        res.setHeader('Content-Type', 'text/plain');
         return res.end('Arquivo não encontrado');
       }
       const content = fs.readFileSync(filePath);
-      res.setHeader('Content-Type', MIME_TYPES[ext] || 'application/octet-stream');
+      res.setHeader('Content-Type', MIME_TYPES[ext]);
       return res.end(content);
     } catch (err) {
       res.statusCode = 500;
-      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      res.setHeader('Content-Type', 'text/plain');
       return res.end('Erro ao carregar arquivo');
     }
   }
 
-  // Rotas da API — delega para o server.js se existir
+  // 2. Rotas da API
   if (url.startsWith('/api/')) {
     try {
       const app = require('../server.js');
@@ -58,15 +50,15 @@ module.exports = async (req, res) => {
     }
   }
 
-  // Qualquer outra rota — serve index.html (SPA fallback)
+  // 3. Qualquer outra rota — serve index.html (SPA fallback)
   const indexPath = path.join(__dirname, '..', 'index.html');
   try {
-    const content = fs.readFileSync(indexPath);
+    const content = fs.readFileSync(indexPath, 'utf8');
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     return res.end(content);
   } catch (err) {
     res.statusCode = 500;
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Content-Type', 'text/plain');
     return res.end('Erro ao carregar página');
   }
 };
