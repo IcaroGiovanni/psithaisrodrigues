@@ -6,6 +6,7 @@
   "routes": [
     { "src": "/(.*\\.(html|css|js|jpg|jpeg|png|gif|webp|ico|svg|json))$", "dest": "/$1" },
     { "src": "/uploads/(.*)", "dest": "/uploads/$1" },
-    { "src": "/(.*)", "dest": "/server.js" }
+    { "src": "/api/(.*)", "dest": "/server.js" },
+    { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
