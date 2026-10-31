@@ -555,15 +555,6 @@ function removeUpload(imagePath) {
 }
 
 /* ==========================================================================
- * Fallback SPA — serve index.html para rotas não encontradas
- * ========================================================================== */
-
-app.get('*', (req, res) => {
-  if (req.path.startsWith('/api')) return res.status(404).json({ success: false, message: 'Endpoint não encontrado.' });
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-/* ==========================================================================
  * Início
  * ========================================================================== */
 
@@ -576,7 +567,4 @@ if (require.main === module) {
   });
 }
 
-// Handler para o Vercel (serverless)
-module.exports = (req, res) => {
-  app(req, res);
-};
+module.exports = app;
