@@ -576,4 +576,7 @@ if (require.main === module) {
   });
 }
 
-module.exports = app;
+// Handler para o Vercel (serverless)
+module.exports = (req, res) => {
+  app(req, res);
+};
