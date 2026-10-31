@@ -558,9 +558,13 @@ function removeUpload(imagePath) {
  * Início
  * ========================================================================== */
 
-app.listen(PORT, () => {
-  console.log(`Blog rodando em http://localhost:${PORT}`);
-  if (!process.env.BLOG_PASSWORD) {
-    console.log('Login padrão: usuário "Thais Rodrigues" · senha "123456" (defina BLOG_PASSWORD no ambiente).');
-  }
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Blog rodando em http://localhost:${PORT}`);
+    if (!process.env.BLOG_PASSWORD) {
+      console.log('Login padrão: usuário "Thais Rodrigues" · senha "123456" (defina BLOG_PASSWORD no ambiente).');
+    }
+  });
+}
+
+module.exports = app;
