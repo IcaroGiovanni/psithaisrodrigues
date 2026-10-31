@@ -17,13 +17,12 @@ const MIME_TYPES = {
 
 module.exports = async (req, res) => {
   const rawUrl = req.url || '/';
-  // Remove query string para pegar o caminho real do arquivo
   const urlPath = rawUrl.split('?')[0].split('#')[0];
   const ext = path.extname(urlPath).toLowerCase();
 
-  // 1. Arquivos estáticos — serve direto com content-type correto
+  // 1. Arquivos estáticos — serve direto do cwd (raiz do projeto)
   if (ext && MIME_TYPES[ext]) {
-    const filePath = path.join(__dirname, '..', urlPath);
+    const filePath = path.join(process.cwd(), urlPath);
     try {
       if (!fs.existsSync(filePath)) {
         res.statusCode = 404;
@@ -44,7 +43,7 @@ module.exports = async (req, res) => {
   // 2. Rotas da API
   if (urlPath.startsWith('/api/')) {
     try {
-      const app = require('../server.js');
+      const app = require(path.join(process.cwd(), 'server.js'));
       return app(req, res);
     } catch (err) {
       res.statusCode = 404;
@@ -54,7 +53,7 @@ module.exports = async (req, res) => {
   }
 
   // 3. Qualquer outra rota — serve index.html (SPA fallback)
-  const indexPath = path.join(__dirname, '..', 'index.html');
+  const indexPath = path.join(process.cwd(), 'index.html');
   try {
     const content = fs.readFileSync(indexPath, 'utf8');
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
