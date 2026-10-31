@@ -1,25 +1,63 @@
 const fs = require('fs');
 const path = require('path');
 
+const STATIC_EXTENSIONS = ['.html', '.css', '.js', '.jpg', '.jpeg', '.png', '.gif', '.webp', '.ico', '.svg', '.json'];
+
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.ico': 'image/x-icon',
+  '.svg': 'image/svg+xml',
+  '.json': 'application/json',
+};
+
 module.exports = async (req, res) => {
-  // Se for rota da API, tenta usar o server.js
-  if (req.url.startsWith('/api')) {
+  const url = req.url || '/';
+
+  // Rotas da API — delega para o server.js
+  if (url.startsWith('/api/')) {
     try {
       const app = require('../server.js');
       return app(req, res);
     } catch (err) {
-      return res.status(404).json({ error: 'API endpoint not found' });
+      res.statusCode = 404;
+      res.setHeader('Content-Type', 'application/json');
+      return res.end(JSON.stringify({ error: 'API endpoint not found' }));
     }
   }
 
-  // Servir index.html para qualquer outra rota (SPA fallback)
-  const filePath = path.join(__dirname, '..', 'index.html');
+  // Arquivos estáticos — serve direto
+  const ext = path.extname(url).toLowerCase();
+  if (STATIC_EXTENSIONS.includes(ext)) {
+    const filePath = path.join(__dirname, '..', url);
+    try {
+      if (!fs.existsSync(filePath)) {
+        res.statusCode = 404;
+        return res.end('Arquivo não encontrado');
+      }
+      const content = fs.readFileSync(filePath);
+      res.setHeader('Content-Type', MIME_TYPES[ext] || 'application/octet-stream');
+      return res.end(content);
+    } catch (err) {
+      res.statusCode = 500;
+      return res.end('Erro ao carregar arquivo');
+    }
+  }
 
+  // Qualquer outra rota — serve index.html (SPA fallback)
+  const indexPath = path.join(__dirname, '..', 'index.html');
   try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    res.setHeader('Content-Type', 'text/html');
-    res.send(content);
+    const content = fs.readFileSync(indexPath, 'utf8');
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.end(content);
   } catch (err) {
-    res.status(500).send('Error loading page');
+    res.statusCode = 500;
+    return res.end('Erro ao carregar página');
   }
 };
